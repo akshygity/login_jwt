@@ -25,5 +25,5 @@ jobs:
     - name: Upload SBOM
       uses: actions/upload-artifact@v3
       with:
-        name: sbom-cyclonedx
+        name: sbom-cycloned
         path: _manifest/CycloneDX.json
