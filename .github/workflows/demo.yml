@@ -1,0 +1,58 @@
+Skip to content
+Search or jump to…
+Pull requests
+Issues
+Codespaces
+Marketplace
+Explore
+ 
+@akshayd3v 
+CryptosoftInc
+/
+cs-backend
+Private
+Cannot fork because forking is disabled.
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+Generate SBOM in CycloneDX Format
+Update MSFT_SBOM_TOOL.yml #43
+Jobs
+Run details
+Workflow file for this run
+.github/workflows/check.yml at f951986
+name: Generate SBOM in CycloneDX Format
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Install dependencies
+      run: npm ci
+    - name: Download SBOM Tool
+      run: curl -Lo sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64 && chmod +x sbom-tool
+    - name: Generate SBOM in Microsoft Tool Format
+      run: ./sbom-tool generate -manifestDirPath ./ -b ~/.npm -bc . -pn npm -pv 1.0.0 -ps MyCompany -nsb https://sbom.mycompany.com -V Verbose > sbom_output.json
+    - name: Upload SBOM Output
+      uses: actions/upload-artifact@v3
+      with:
+        name: sbom_output.json
+        path: sbom_output.json
+    - name: Install spdx-tools
+      run: wget https://github.com/CycloneDX/cyclonedx-cli/releases/download/v0.24.2/cyclonedx-linux-x64 && chmod +x cyclonedx-linux-x64
+    - name: Convert SPDX to CycloneDX
+      run: ./cyclonedx-linux-x64 convert --input-file _manifest/spdx_2.2/manifest.spdx.json --output-file _manifest/CycloneDX.json --output-format json
+    - name: Upload SBOM
+      uses: actions/upload-artifact@v3
+      with:
+        name: sbom-cyclonedx
+        path: _manifest/CycloneDX.json
+Update MSFT_SBOM_TOOL.yml · CryptosoftInc/cs-backend@f951986
