@@ -27,4 +27,3 @@ jobs:
       with:
         name: sbom-cyclonedx
         path: _manifest/CycloneDX.json
-Update MSFT_SBOM_TOOL.yml · CryptosoftInc/cs-backend@f951986
