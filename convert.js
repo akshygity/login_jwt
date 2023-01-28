@@ -18,8 +18,8 @@ const spdx2cyclonedx = edge.func(`
 `);
 
 const input = {
-  spdxFile: path.join(__dirname, 'your/spdx/file.spdx'),
-  cyclonedxFile: path.join(__dirname, 'your/output/file.cyclonedx')
+  spdxFile: path.join(__dirname, 'sbom_file.json'),
+  cyclonedxFile: path.join(__dirname, '_manifest/manifest.CycloneDX.json')
 };
 
 spdx2cyclonedx(input, (error, result) => {
