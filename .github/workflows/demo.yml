@@ -26,7 +26,10 @@ jobs:
         continue-on-error: true
         run: npm list
       - name: Install dependencies
-        run: npm install && npm install edge && npm install CycloneDX.Spdx.Interop
+        run: npm install && npm install edge 
+      - name: Install CycloneDX.Spdx.Interop package
+        run: dotnet add package CycloneDX.Spdx.Interop --version 5.3.1
+   
 
         
         env:
