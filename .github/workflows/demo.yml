@@ -53,6 +53,8 @@ jobs:
       - name: Convert SPDX to CycloneDX
         run: ./cyclonedx-linux-x64 convert --input-file sbom_file.json --output-file _manifest/manifest.CycloneDX.json --output-format json
       - name: Upload SBOM
+        run: node convert.js
+      - name: Upload SBOM
         uses: actions/upload-artifact@v3
         with:
           name: sbom-cyclonedx
