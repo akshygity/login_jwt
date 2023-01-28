@@ -27,6 +27,8 @@ jobs:
         run: npm list
       - name: Install dependencies
         run: npm install && npm install edge 
+      - name: Install dependencies
+        run:  npm i edge 
    
 
         
