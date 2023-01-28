@@ -1,32 +1,4 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Codespaces
-Marketplace
-Explore
- 
-@akshayd3v 
-CryptosoftInc
-/
-cs-backend
-Private
-Cannot fork because forking is disabled.
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-Settings
-Generate SBOM in CycloneDX Format
-Update MSFT_SBOM_TOOL.yml #43
-Jobs
-Run details
-Workflow file for this run
-.github/workflows/check.yml at f951986
+
 name: Generate SBOM in CycloneDX Format
 on: push
 jobs:
