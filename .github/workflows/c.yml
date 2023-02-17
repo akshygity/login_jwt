@@ -1,0 +1,32 @@
+
+name: Generate SBOM
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  generate-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install syft
+        run: |
+          LATEST_SYFT_VERSION=$(curl -s https://api.github.com/repos/anchore/syft/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin "$LATEST_SYFT_VERSION"
+          syft version
+      - name: Generate SBOM
+        run: syft alpine:latest -o cyclonedx-json >sbom.json 
+
+      - name: Save Sbom to new file 
+        run: |    
+           echo -n "$(cat './sbom.json')" | jq '. + {"name": "${{github.actor}}"}' | jq '. + {"repo": "${{github.repositoryUrl}}"}' > sbom_file.json 
+      - name: Call Api
+        run: |  
+          curl -k --request POST 'https://dt.cryptosoft.com:9443/api/v1/guest/sbom-github' \
+          --header 'Content-Type: application/json' \
+          --data  @sbom_file.json 
