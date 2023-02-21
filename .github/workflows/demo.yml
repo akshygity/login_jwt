@@ -1,23 +1,26 @@
-name: Generate SBOM
-on: [push]
-
+name: Generate CycloneDX SBOM
+on:
+  push:
+    branches: [ main ]
 jobs:
   generate-sbom:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      
-    - name: Setup Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '1.17'
-        
-    - name: Download and install cyclonedx-gomod
-      run: |
-        curl -L https://github.com/CycloneDX/cyclonedx-gomod/releases/latest/download/cyclonedx-gomod_$(uname -s)_$(uname -m).tar.gz | tar xzv
-        sudo mv cyclonedx-gomod /usr/local/bin/
-
-    - name: Generate SBOM
-      run: |
-        cyclonedx-gomod mod -licenses -json -output sbom.json
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: Download CycloneDX tool
+        run: |
+          curl -sL https://github.com/CycloneDX/cyclonedx-gomod/releases/latest/download/cyclonedx-gomod_$(uname -s)_$(uname -m).tar.gz | tar xzv
+          sudo mv cyclonedx-gomod /usr/local/bin/
+      - name: Generate SBOM
+        run: |
+          cyclonedx-gomod mod -licenses -output sbom.xml
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v2
+        with:
+          name: sbom
+          path: sbom.xml
