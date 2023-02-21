@@ -9,14 +9,18 @@ jobs:
     name: Node ${{ matrix.node }} sample
     steps:
       - uses: actions/checkout@v3
-      - name: Create SBOM with CycloneDX
-        id: sbom
-        uses: CycloneDX/gh-gomod-generate-sbom@v1 
+ # Download and invoke cyclonedx-gomod in a single step
+      - name: Generate SBOM
+        uses: CycloneDX/gh-gomod-generate-sbom@v1
         with:
-            output: './test.app.bom.json'
+         version: v1
+         args: mod -licenses -json -output sbom.json
+
+# Just download cyclonedx-gomod and call it in a later step
+
       - name: Save Sbom to new file 
         run: |    
-           echo -n "$(cat './test.app.bom.json')" | jq '. + {"name": "${{github.actor}}"}' | jq '. + {"repo": "${{github.repositoryUrl}}"}' > sbom_file.json 
+           echo -n "$(cat './sbom.json')" | jq '. + {"name": "${{github.actor}}"}' | jq '. + {"repo": "${{github.repositoryUrl}}"}' > sbom_file.json 
       - name: Call Api
         run: |  
           curl -k --request POST 'https://dt.cryptosoft.com:9443/api/v1/guest/sbom-github' \
