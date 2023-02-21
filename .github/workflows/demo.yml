@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        name: npm install -g @appthreat/cdxgen    
+        name: sudo npm install -g @appthreat/cdxgen    
       - name: Generate CycloneDX BOM
         run: |
           cd $1
