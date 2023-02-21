@@ -8,5 +8,7 @@ jobs:
         name: npm install -g @cyclonedx/cdxgen@8.0.1       
       - name: Generate CycloneDX BOM
         run: |
-           export FETCH_LICENSE=true
-           cdxgen -r -o sbom.json
+          cd $1
+          export FETCH_LICENSE=true
+          cdxgen -r -o sbom.json
+ 
