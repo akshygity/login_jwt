@@ -7,10 +7,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install cyclonedx-gomod
         run: |
-          curl -sL https://github.com/CycloneDX/cdxgen/archive/refs/tags/v8.0.6.tar.gz | tar xz
-          export PATH="$PATH:$(pwd)/cdxgen-8.0.6/bin"
+          curl -sL https://github.com/CycloneDX/cyclonedx-gomod/releases/download/v1.3.0/cyclonedx-gomod_1.3.0_linux_amd64.tar.gz | tar xz
           
       - name: Generate CycloneDX BOM
         run: |
             export FETCH_LICENSE=true
-            cdxgen -r -o sbom.json
+            cyclonedx-gomod generate -o sbom.xml
