@@ -7,10 +7,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install cyclonedx-gomod
         run: |
-          curl -sL https://github.com/CycloneDX/cyclonedx-gomod/releases/download/v1.3.0/cyclonedx-gomod_1.3.0_linux_amd64.tar.gz | tar xz
-          chmod +x cyclonedx-gomod
+          curl -sL https://github.com/CycloneDX/cdxgen/archive/refs/tags/v8.0.6.tar.gz | tar xz
+          
       - name: Generate CycloneDX BOM
-        run: ./cyclonedx-gomod generate -o bom.xml
+        run: |
+            export FETCH_LICENSE=true
+            cdxgen -r -o sbom.json
       - name: Upload CycloneDX BOM
         uses: actions/upload-artifact@v2
         with:
