@@ -5,11 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install cyclonedx-gomod
-        run: |
-          curl -sL https://github.com/CycloneDX/cyclonedx-gomod/releases/download/v1.3.0/cyclonedx-gomod_1.3.0_linux_amd64.tar.gz | tar xz
-          
+      - name: npm install -g @cyclonedx/cdxgen@8.0.1       
       - name: Generate CycloneDX BOM
         run: |
-            export FETCH_LICENSE=true
-            cyclonedx-gomod generate -o sbom.xml
+           export FETCH_LICENSE=true
+           cdxgen -r -o sbom.json
