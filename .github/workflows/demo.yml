@@ -8,13 +8,9 @@ jobs:
       - name: Install cyclonedx-gomod
         run: |
           curl -sL https://github.com/CycloneDX/cdxgen/archive/refs/tags/v8.0.6.tar.gz | tar xz
+          export PATH="$PATH:$(pwd)/cdxgen-8.0.6/bin"
           
       - name: Generate CycloneDX BOM
         run: |
             export FETCH_LICENSE=true
             cdxgen -r -o sbom.json
-      - name: Upload CycloneDX BOM
-        uses: actions/upload-artifact@v2
-        with:
-          name: bom.xml
-          path: bom.xml
