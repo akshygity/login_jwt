@@ -1,9 +1,7 @@
 name: Generate CycloneDX BOM
-
-on:[push]
-
+on: push
 jobs:
-  generate-bom:
+  build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
