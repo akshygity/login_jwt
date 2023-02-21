@@ -10,5 +10,5 @@ jobs:
         run: |
           cd $1
           export FETCH_LICENSE=true
-          cdxgen -r -o sbom.json
+          cdxgen -o sbom.json
  
