@@ -1,63 +1,27 @@
-name: MSFT_SBOM_TOOL
-on: push       
+name: Build SBOM and send to api-syft
+on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      - uses: actions/checkout@v3
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v3
-        
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-      - name: Install dependencies
-        run: npm install && npm install edge 
-      - name: Install dependencies
-        run:  npm i edge 
-   
-
-        
-        env:
-          DeleteManifestDirIfPresent: 'true'
-      - name: Generate SBOM
+      - uses: actions/checkout@v2
+      - name: Install syft
         run: |
-       
-         curl -Lo $RUNNER_TEMP/sbom-tool https://github.com/microsoft/sbom-tool/releases/latest/download/sbom-tool-linux-x64
-         chmod +x $RUNNER_TEMP/sbom-tool
-         $RUNNER_TEMP/sbom-tool generate  -manifestDirPath ./ -b ~/.npm -bc . -pn npm -pv 1.0.0 -ps MyCompany -nsb https://sbom.mycompany.com -V Verbose | tee output.log
-    
+          LATEST_SYFT_VERSION=$(curl -s https://api.github.com/repos/anchore/syft/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin "$LATEST_SYFT_VERSION"
+          syft version
+      - name: Generate SBOM
+        run: syft ./ -o cyclonedx-json >sbom.json
       - name: Save Sbom to new file 
         run: |    
-           echo -n "$(cat './_manifest/spdx_2.2/manifest.spdx.json')" | jq '. + {"name": "${{github.actor}}"}' | jq '. + {"repo": "${{github.repositoryUrl}}"}' > sbom_file.json
+           echo -n "$(cat './sbom.json')" | jq '. + {"name": "${{github.actor}}"}' | jq '. + {"repo": "${{github.repositoryUrl}}"}' > sbom_file.json 
+      - name: Call Api
+        run: |  
+          curl -k --request POST 'https://dt.cryptosoft.com:9443/api/v1/guest/sbom-github' \
+          --header 'Content-Type: application/json' \
+          --data  @sbom_file.json 
       - name: Upload SBOM
         uses: actions/upload-artifact@v3
         with:
-          name: sbom-json
-          path: sbom_file.json 
-     
-      - name: Download SPDX tools
-        run: wget https://github.com/CycloneDX/cyclonedx-cli/releases/download/v0.24.2/cyclonedx-linux-x64 && chmod +x cyclonedx-linux-x64
-      - name: Convert SPDX to CycloneDX
-        run: ./cyclonedx-linux-x64 convert --input-file sbom_file.json --output-file _manifest/manifest.CycloneDX.json --output-format json
-      - name: Upload SBOM
-        run: node convert.js
-      - name: Upload SBOM
-        uses: actions/upload-artifact@v3
-        with:
-          name: sbom-cyclonedx
-          path: _manifest/manifest.CycloneDX.json 
+          name: sbom
+          path: ./sbom_file.json    
