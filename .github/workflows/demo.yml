@@ -14,7 +14,7 @@ jobs:
           go-version: 1.17
       - name: Download CycloneDX tool
         run: |
-          curl -sL https://github.com/CycloneDX/cyclonedx-gomod/releases/latest/download/cyclonedx-gomod_$(uname -s)_$(uname -m).tar.gz | tar xzv
+          curl -sL https://github.com/CycloneDX/cyclonedx-gomod/releases/download/v1.3.0/cyclonedx-gomod_1.3.0_linux_amd64.bom.json
           sudo mv cyclonedx-gomod /usr/local/bin/
       - name: Generate SBOM
         run: |
